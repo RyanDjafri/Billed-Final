@@ -77,13 +77,6 @@ describe("Given I am on the New Bill page", () => {
       }),
     };
 
-    const newBillInstance = new NewBill({
-      document,
-      onNavigate: onNavigateMock,
-      store: storeMock,
-      localStorage: window.localStorage,
-    });
-
     const submitButton = screen.getByTestId("submit-button");
     fireEvent.click(submitButton);
 

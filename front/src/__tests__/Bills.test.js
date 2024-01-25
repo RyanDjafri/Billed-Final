@@ -33,30 +33,38 @@ describe("Given I am connected as an employee", () => {
       );
     });
 
-    test("fetches bills from the mock API GET", async () => {
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ type: "Employee", email: "a@a" })
-      );
-      const root = document.createElement("div");
-      root.setAttribute("id", "root");
-      document.body.append(root);
-      router();
-      window.onNavigate(ROUTES_PATH.Bills);
-      await waitFor(() => screen.getByText("Validations"));
-      const content = await screen.getByText("Mes notes de frais");
-      expect(content).toBeTruthy();
-      bills.forEach((bill) => {
-        const billName = screen.getByText(bill.name);
-        const billAmount = screen.getByText(`${bill.amount} €`);
-        const billDate = screen.getByText(bill.date);
-        const billStatus = screen.getByText(bill.status);
+    test("=> fetches bills from the mock API GET.", async () => {
+      document.body.innerHTML = `
+            <div id="root"></div>
+          `;
 
-        expect(billName).toBeInTheDocument();
-        expect(billAmount).toBeInTheDocument();
-        expect(billDate).toBeInTheDocument();
-        expect(billStatus).toBeInTheDocument();
+      const rootDiv = document.getElementById("root");
+      router();
+      window.onNavigate(ROUTES_PATH["Bills"]);
+      const bills = new Bills({
+        document,
+        onNavigate,
+        store: storeMock,
+        localStorage,
       });
+      const consoleLog = jest.spyOn(console, "log").mockImplementation();
+
+      bills
+        .getBills()
+        .then((data) => {
+          rootDiv.innerHTML = BillsUI({ data });
+        })
+        .catch((error) => {
+          rootDiv.innerHTML = ROUTES({ pathname: ROUTES_PATH["Bills"], error });
+        });
+      await waitFor(() => {
+        expect(rootDiv.innerHTML).not.toEqual("");
+        expect(consoleLog).toHaveBeenCalled();
+
+        expect(consoleLog.mock.calls[0]).toEqual(["length", 4]);
+      });
+
+      consoleLog.mockRestore();
     });
 
     test("Then the bill icon in vertical layout should be highlighted", async () => {

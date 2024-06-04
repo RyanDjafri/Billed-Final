@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import "@testing-library/jest-dom";
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
@@ -315,7 +312,7 @@ describe("Given I am connected as Admin and I am on the Dashboard page and I cli
       userEvent.click(eye);
       expect(handleClickIconEye).toHaveBeenCalled();
 
-      const modal = screen.getByTestId("modalFileAdmin");
+      const modal = screen.getByTestId("modaleFileAdmin");
       expect(modal).toBeTruthy();
     });
   });

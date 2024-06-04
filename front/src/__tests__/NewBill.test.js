@@ -3,6 +3,9 @@ import NewBill from "../containers/NewBill.js";
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import "@testing-library/jest-dom";
+import fetchMock from "jest-fetch-mock";
+
+fetchMock.enableMocks();
 
 describe("Given I am on the New Bill page", () => {
   beforeEach(() => {
@@ -14,11 +17,11 @@ describe("Given I am on the New Bill page", () => {
         email: "a@a",
       })
     );
-  });
-  test("When I submit a valid bill form, it should create a new bill using the store API", async () => {
     document.body.innerHTML =
       '<form data-testid="form-new-bill"><input data-testid="file" type="file" /><button data-testid="submit-button">Submit</button></form>';
+  });
 
+  test("When I submit a valid bill form, it should create a new bill using the store API", async () => {
     const onNavigateMock = jest.fn();
     const storeMock = {
       bills: () => ({
@@ -36,17 +39,11 @@ describe("Given I am on the New Bill page", () => {
     });
 
     const fileInput = screen.getByTestId("file");
-    const imageContent = await fetch("path/to/sample/image.png").then((res) =>
-      res.blob()
-    );
+    const imageContent = new Blob(["image content"], { type: "image/png" });
+
     fireEvent.change(fileInput, {
       target: {
-        files: [
-          new File([imageContent], {
-            type: "image/png",
-            name: "test.png",
-          }),
-        ],
+        files: [new File([imageContent], "test.png", { type: "image/png" })],
       },
     });
 
@@ -63,13 +60,10 @@ describe("Given I am on the New Bill page", () => {
 
     const formData = storeMock.bills().create.mock.calls[0][0].data;
     expect(formData.get("file")).toEqual(expect.any(File));
-    expect(formData.get("email")).toEqual(expect.any(String));
+    expect(formData.get("email")).toEqual("a@a");
   });
 
   test("When I submit a form with no file selected, it should not create a new bill", async () => {
-    document.body.innerHTML =
-      '<form data-testid="form-new-bill"><input data-testid="file" type="file" /><button data-testid="submit-button">Submit</button></form>';
-
     const onNavigateMock = jest.fn();
     const storeMock = {
       bills: () => ({
@@ -87,9 +81,6 @@ describe("Given I am on the New Bill page", () => {
   });
 
   test("When I submit a form with an invalid file type, it should not create a new bill", async () => {
-    document.body.innerHTML =
-      '<form data-testid="form-new-bill"><input data-testid="file" type="file" /><button data-testid="submit-button">Submit</button></form>';
-
     const onNavigateMock = jest.fn();
     const storeMock = {
       bills: () => ({
@@ -107,9 +98,7 @@ describe("Given I am on the New Bill page", () => {
     const fileInput = screen.getByTestId("file");
     fireEvent.change(fileInput, {
       target: {
-        files: [
-          new File(["file content"], { type: "text/plain", name: "test.txt" }),
-        ],
+        files: [new File(["file content"], "test.txt", { type: "text/plain" })],
       },
     });
 

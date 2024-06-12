@@ -5,12 +5,12 @@ import "@testing-library/jest-dom";
 import { screen, waitFor } from "@testing-library/dom";
 import { formatDate } from "../app/format.js";
 import BillsUI from "../views/BillsUI.js";
+import Bills from "../containers/Bills.js";
 import { bills } from "../fixtures/bills.js";
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import router from "../app/Router.js";
 import storeMock from "../__mocks__/store.js";
-import Bills from "../containers/Bills.js";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("jquery", () => ({

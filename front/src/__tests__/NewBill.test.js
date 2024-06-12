@@ -68,7 +68,7 @@ describe("Given I am on the New Bill page", () => {
     const storeMock = {
       bills: () => ({
         create: createMock,
-        update: jest.fn().mockResolvedValue(), // Ensure update returns a Promise or remove any then calls
+        update: jest.fn().mockResolvedValue(), 
       }),
     };
 
